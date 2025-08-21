@@ -68,10 +68,7 @@
  * frequency.  Not used if left undefined.
  * The default value is undefined (commented out).  If you need this value bring
  * it back and set it to a suitable value. */
-
-/*
- #define configSYSTICK_CLOCK_HZ                  [Platform specific]
- */
+#define configSYSTICK_CLOCK_HZ  ( ( unsigned long ) 100000 )
 
 /******************************************************************************/
 /* Scheduling behaviour related definitions. **********************************/
@@ -79,7 +76,7 @@
 
 /* configTICK_RATE_HZ sets frequency of the tick interrupt in Hz, normally
  * calculated from the configCPU_CLOCK_HZ value. */
-#define configTICK_RATE_HZ                         10
+#define configTICK_RATE_HZ                         1000
 
 /* Set configUSE_PREEMPTION to 1 to use pre-emptive scheduling.  Set
  * configUSE_PREEMPTION to 0 to use co-operative scheduling.
@@ -325,11 +322,7 @@
  * to the highest interrupt priority (0).  Not supported by all FreeRTOS ports.
  * See https://www.freertos.org/RTOS-Cortex-M3-M4.html for information specific
  * to ARM Cortex-M devices. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY     0
-
-/* Another name for configMAX_SYSCALL_INTERRUPT_PRIORITY - the name used depends
- * on the FreeRTOS port. */
-#define configMAX_API_CALL_INTERRUPT_PRIORITY    0
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY     112
 
 /******************************************************************************/
 /* Hook and callback function related definitions. ****************************/

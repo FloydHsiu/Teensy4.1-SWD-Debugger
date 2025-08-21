@@ -29,7 +29,6 @@
 
 CORES_DIR = cores/teensy4
 FREERTOS_DIR = freertos
-FREERTOS_PORTABLE_DIR = $(FREERTOS_DIR)/portable/GCC/ARM_CM7/r0p1
 FREERTOS_HEAP_DIR = $(FREERTOS_DIR)/portable/MemMang
 TARGET_DIR = device
 
@@ -40,7 +39,7 @@ TARGET_DIR = device
 
 # Use these lines for Teensy 4.1
 MCU = IMXRT1062
-MCU_LD = $(CORES_DIR)/imxrt1062_t41.ld
+MCU_LD = $(TARGET_DIR)/imxrt1062_t41.ld
 MCU_DEF = ARDUINO_TEENSY41
 
 # The name of your project (used to name the compiled .hex file)
@@ -164,19 +163,17 @@ READELF = $(COMPILERPATH)/arm-none-eabi-readelf
 C_SRC := $(wildcard $(TARGET_DIR)/src/*.c)
 CPP_SRC := $(wildcard $(TARGET_DIR)/src/*.cpp)
 FREERTOS_SRC := $(wildcard $(FREERTOS_DIR)/*.c)
-FREERTOS_PORTABLE_SRC := $(wildcard $(FREERTOS_PORTABLE_DIR)/*.c)
 FREERTOS_HEAP_SRC := $(FREERTOS_HEAP_DIR)/heap_1.c
 CORES_C_SRC := $(wildcard $(CORES_DIR)/*.c)
 CORES_CPP_SRC := $(wildcard $(CORES_DIR)/*.cpp)
 
-FREERTOS_INC := -I$(FREERTOS_DIR)/include -I$(FREERTOS_PORTABLE_DIR) -I$(TARGET_DIR)/inc -I$(CORES_DIR)
+FREERTOS_INC := -I$(FREERTOS_DIR)/include -I$(TARGET_DIR)/inc -I$(CORES_DIR)
 CORES_INC := -I$(CORES_DIR)
 INC := $(FREERTOS_INC) $(CORES_INC)
 
 OBJS := $(patsubst $(TARGET_DIR)/src/%.c,$(BUILD_DIR)/%.o,$(C_SRC))
 OBJS += $(patsubst $(TARGET_DIR)/src/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRC))
 FREERTOS_OBJS := $(patsubst $(FREERTOS_DIR)/%.c,$(BUILD_DIR)/freertos/%.o,$(FREERTOS_SRC))
-FREERTOS_PORTABLE_OBJS := $(patsubst $(FREERTOS_PORTABLE_DIR)/%.c,$(BUILD_DIR)/freertos/portable/%.o,$(FREERTOS_PORTABLE_SRC))
 FREERTOS_HEAP_OBJS := $(patsubst $(FREERTOS_HEAP_DIR)/%.c,$(BUILD_DIR)/freertos/portable/MemMang/%.o,$(FREERTOS_HEAP_SRC))
 CORES_OBJS := $(patsubst $(CORES_DIR)/%.c,$(BUILD_DIR)/cores/%.o,$(CORES_C_SRC))
 CORES_OBJS += $(patsubst $(CORES_DIR)/%.cpp,$(BUILD_DIR)/cores/%.o,$(CORES_CPP_SRC))
@@ -193,15 +190,11 @@ $(BUILD_DIR)/freertos/%.o: $(FREERTOS_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(FREERTOS_INC) -c -o $@ $<
 
-$(BUILD_DIR)/freertos/portable/%.o: $(FREERTOS_PORTABLE_DIR)/%.c
-	@mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(FREERTOS_INC) -c -o $@ $<
-
 $(BUILD_DIR)/freertos/portable/MemMang/%.o: $(FREERTOS_HEAP_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(FREERTOS_INC) -c -o $@ $<
 
-$(FREERTOS_LIB): $(FREERTOS_OBJS) $(FREERTOS_PORTABLE_OBJS) $(FREERTOS_HEAP_OBJS)
+$(FREERTOS_LIB): $(FREERTOS_OBJS) $(FREERTOS_HEAP_OBJS)
 	@echo "Archiving $@"
 	$(AR) rcs $@ $^
 
@@ -231,6 +224,7 @@ $(TARGET_ELF): $(OBJS) $(FREERTOS_LIB) $(CORES_LIB) $(MCU_LD)
 	@echo "Linking $@"
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	$(READELF) -a $@ > $(BUILD_DIR)/$(TARGET)_list.txt
+	arm-none-eabi-objdump -Sdl $@ > build/logicanalyzer.asm
 
 $(TARGET_HEX): $(TARGET_ELF)
 	$(SIZE) $<

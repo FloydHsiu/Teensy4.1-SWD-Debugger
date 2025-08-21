@@ -36,6 +36,9 @@
 #include <queue.h>
 #include <timers.h>
 #include <semphr.h>
+#include "imxrt.h"
+
+void startup_late_hook(void);
 
 /*-----------------------------------------------------------*/
 
@@ -47,6 +50,8 @@ static void exampleTask( void * parameters )
 {
     ( void ) printf( "exampleTask\n" );
     int state = 0;
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+
     pinMode(13, OUTPUT);
 
     for( ; ; )
@@ -58,7 +63,7 @@ static void exampleTask( void * parameters )
 
 		state = !state;
 
-        vTaskDelay( 1000 / portTICK_PERIOD_MS ); /* delay 100 ticks */
+        xTaskDelayUntil( &xLastWakeTime , pdMS_TO_TICKS( 1000 ) ); /* delay 100 ticks */
     }
 }
 
@@ -66,8 +71,6 @@ extern "C" int main(void)
 {
 	static StaticTask_t exampleTaskTCB;
     static StackType_t exampleTaskStack[ configMINIMAL_STACK_SIZE ];
-
-    delay(10000); // delay a little while for me to connect to serial
 
     ( void ) printf( "Example FreeRTOS Project\n" );
 
