@@ -30,65 +30,48 @@
 
 #include "Arduino.h"
 #include "debug/printf.h"
-
-#include <FreeRTOS.h>
-#include <task.h>
-#include <queue.h>
-#include <timers.h>
-#include <semphr.h>
 #include "imxrt.h"
 
-void startup_late_hook(void);
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <semphr.h>
+#include <task.h>
+#include <timers.h>
 
 /*-----------------------------------------------------------*/
 
-static void exampleTask( void * parameters ) __attribute__( ( noreturn ) );
+static void LedBlinkTask(void *parameters) __attribute__((noreturn));
 
 /*-----------------------------------------------------------*/
 
-static void exampleTask( void * parameters )
+static void LedBlinkTask(void *parameters)
 {
-    ( void ) printf( "exampleTask\n" );
-    int state = 0;
-    TickType_t xLastWakeTime = xTaskGetTickCount();
+    (void)printf("LedBlinkTask\n");
 
-    pinMode(13, OUTPUT);
-
-    for( ; ; )
+    for (;;)
     {
-		if(state == 0)
-			digitalWriteFast(13, HIGH);
-		else
-			digitalWriteFast(13, LOW);
-
-		state = !state;
-
-        xTaskDelayUntil( &xLastWakeTime , pdMS_TO_TICKS( 1000 ) ); /* delay 100 ticks */
+        digitalToggleFast(3);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
 extern "C" int main(void)
 {
-	static StaticTask_t exampleTaskTCB;
-    static StackType_t exampleTaskStack[ configMINIMAL_STACK_SIZE ];
+    static StaticTask_t led_blink_task_tcb;
+    static StackType_t led_blink_task_stack[configMINIMAL_STACK_SIZE];
 
-    ( void ) printf( "Example FreeRTOS Project\n" );
+    (void)printf("Example FreeRTOS Project\n");
 
-    ( void ) xTaskCreateStatic( exampleTask,
-                                "example",
-                                configMINIMAL_STACK_SIZE,
-                                NULL,
-                                configMAX_PRIORITIES - 1U,
-                                &( exampleTaskStack[ 0 ] ),
-                                &( exampleTaskTCB ) );
+    (void)xTaskCreateStatic(LedBlinkTask, "LedBlink", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 1U,
+                            &(led_blink_task_stack[0]), &(led_blink_task_tcb));
 
     /* Start the scheduler. */
     vTaskStartScheduler();
 
-    for( ; ; )
+    for (;;)
     {
         /* Should not reach here. */
-        ( void ) printf( "Should not reach here\n" );
+        (void)printf("Should not reach here\n");
     }
 
     return 0;
@@ -96,18 +79,17 @@ extern "C" int main(void)
 
 /*-----------------------------------------------------------*/
 
-#if ( configCHECK_FOR_STACK_OVERFLOW > 0 )
+#if (configCHECK_FOR_STACK_OVERFLOW > 0)
 
-    void vApplicationStackOverflowHook( TaskHandle_t xTask,
-                                        char * pcTaskName )
-    {
-        /* Check pcTaskName for the name of the offending task,
-         * or pxCurrentTCB if pcTaskName has itself been corrupted. */
-        ( void ) xTask;
-        ( void ) pcTaskName;
-    }
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    /* Check pcTaskName for the name of the offending task,
+     * or pxCurrentTCB if pcTaskName has itself been corrupted. */
+    (void)xTask;
+    (void)pcTaskName;
+    printf("Task %s stack overflow", pcTaskGetName);
+}
 
 #endif /* #if ( configCHECK_FOR_STACK_OVERFLOW > 0 ) */
 
 /*-----------------------------------------------------------*/
-

@@ -1,0 +1,22 @@
+# Based on LLVM style, with modifications
+BasedOnStyle: LLVM
+# Align pointers to the name
+PointerAlignment: Right
+# Indent width for code
+IndentWidth: 4
+# Maximum line length
+ColumnLimit: 0
+# Indent case labels in switch statements
+IndentCaseLabels: true
+# Always break before braces for functions, namespaces and control statements
+BreakBeforeBraces: Allman
+# Align consecutive assignments
+# AlignConsecutiveAssignments: true
+# Align consecutive declarations
+# AlignConsecutiveDeclarations: AcrossEmptyLines
+# Align trailing comments
+AlignTrailingComments: true
+# Align escaped newlines in macros
+AlignEscapedNewlines: Right
+# Align consecutive macros
+AlignConsecutiveMacros: true

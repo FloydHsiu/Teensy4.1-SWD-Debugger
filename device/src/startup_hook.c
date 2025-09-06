@@ -1,33 +1,66 @@
-#include "FreeRTOS.h"
-#include "FreeRTOSConfig.h"
+#include "Arduino.h"
 #include "imxrt.h"
+
+#include <FreeRTOS.h>
+
+#include "gpio_interrupt.h"
 
 extern unsigned long _estack;
 extern volatile uint32_t F_CPU_ACTUAL;
-extern void (* volatile _VectorsRam[NVIC_NUM_INTERRUPTS+16])(void);
+extern void (*volatile _VectorsRam[NVIC_NUM_INTERRUPTS + 16])(void);
+extern volatile uint8_t usb_cdc_line_rtsdtr;
 
-void xPortPendSVHandler( void );
-void vPortSVCHandler( void );
-void xPortSysTickHandler( void );
+FASTRUN void xPortPendSVHandler(void);
+FASTRUN void vPortSVCHandler(void);
+FASTRUN void xPortSysTickHandler(void);
+FASTRUN void GPIO15Handler(void);
 
 void startup_late_hook(void)
 {
-    unsigned int i;
-
+    // interrupts expect to be disabled before vTaskStartScheduler
     portDISABLE_INTERRUPTS();
 
-    // for (i=0; i < NVIC_NUM_INTERRUPTS + 16; i++) _VectorsRam[i] = &my_unused_interrupt_vector;
-
+    // prvPortStartFirstTask - FreeRTOS use this to locate the stack
     _VectorsRam[0] = (void (*)(void))(&_estack);
     _VectorsRam[11] = vPortSVCHandler;
-	_VectorsRam[14] = xPortPendSVHandler;
+    _VectorsRam[14] = xPortPendSVHandler;
 
+    // Reset handler set systick to avoid timing issue of usb initialization
+    // Here reset systick register and its handle function provided by FreeRTOS
+    _VectorsRam[15] = xPortSysTickHandler;
     SYST_CSR = 0;
     SYST_RVR = 0;
     SYST_CVR = 0;
 
-    _VectorsRam[15] = xPortSysTickHandler;
+    // Setup GPIO Pin 15 interrupt
+    // pinMode(15, INPUT);
+    // attachInterrupt(15, GPIO15Handler, RISING);
 
-    for (i=0; i < NVIC_NUM_INTERRUPTS; i++) NVIC_SET_PRIORITY(i, 240);
-    //NVIC_DISABLE_IRQ(IRQ_USB1);
+    // Setup GPIO for debugging
+    *portConfigRegister(3) = 5;
+    *portConfigRegister(5) = 5;
+    *portConfigRegister(7) = 7;
+    *portConfigRegister(13) = 5;
+
+    pinMode(3, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(13, OUTPUT);
+
+    digitalWriteFast(3, LOW);
+    digitalWriteFast(5, LOW);
+    digitalWriteFast(7, LOW);
+    digitalWriteFast(13, LOW);
+
+    unsigned int i;
+    for (i = 0; i < NVIC_NUM_INTERRUPTS; i++)
+        NVIC_SET_PRIORITY(i, 224);
+}
+
+void yield(void) {}
+
+void GPIO15Handler(void)
+{
+    // if(usb_cdc_line_rtsdtr) printf("GPIO15Handler: %x\n", GPIO1_ISR);
+    printf("GPIO15Handler: %x\n", GPIO1_ISR);
 }
