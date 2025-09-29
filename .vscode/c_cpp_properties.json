@@ -17,8 +17,8 @@
                 "ARDUINO=10813",
                 "TEENSYDUINO=159",
                 "ARDUINO_TEENSY41",
-                "PRINT_DEBUG_STUFF",
-                "PRINT_DEBUG_USING_USB"
+                "PRINT_DEBUG_STUFF"
+                //"PRINT_DEBUG_USING_USB"
             ],
             "cStandard": "c17",
             "cppStandard": "c++17",

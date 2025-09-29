@@ -4,3 +4,6 @@
 [submodule "cores"]
 	path = cores
 	url = https://github.com/PaulStoffregen/cores.git
+[submodule "CMSIS-DAP"]
+	path = CMSIS-DAP
+	url = https://github.com/ARM-software/CMSIS-DAP

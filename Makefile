@@ -49,7 +49,8 @@ TARGET = logicanalyzer
 OPTIONS = -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DUSING_MAKEFILE
 
 # usb serial
-OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_SERIAL -DPRINT_DEBUG_USING_USB
+# OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_SERIAL -DPRINT_DEBUG_USING_USB
+OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_SERIAL
 
 #
 # USB Type configuration:
@@ -154,8 +155,8 @@ CORES_LIB = $(BUILD_DIR)/libcores.a
 CC = $(COMPILERPATH)/arm-none-eabi-gcc
 CXX = $(COMPILERPATH)/arm-none-eabi-g++
 AR = $(COMPILERPATH)/arm-none-eabi-ar
-LD = $(COMPILERPATH)/arm-none-eabi-ld
 OBJCOPY = $(COMPILERPATH)/arm-none-eabi-objcopy
+OBJDUMP = $(COMPILERPATH)/arm-none-eabi-objdump
 SIZE = $(COMPILERPATH)/arm-none-eabi-size
 READELF = $(COMPILERPATH)/arm-none-eabi-readelf
 
@@ -224,7 +225,7 @@ $(TARGET_ELF): $(OBJS) $(FREERTOS_LIB) $(CORES_LIB) $(MCU_LD)
 	@echo "Linking $@"
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	$(READELF) -a $@ > $(BUILD_DIR)/$(TARGET)_list.txt
-	arm-none-eabi-objdump -Sdl $@ > build/logicanalyzer.asm
+	$(OBJDUMP) -Sdl $@ > build/logicanalyzer.asm
 
 $(TARGET_HEX): $(TARGET_ELF)
 	$(SIZE) $<
