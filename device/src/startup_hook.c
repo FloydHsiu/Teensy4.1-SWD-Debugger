@@ -36,20 +36,9 @@ void startup_late_hook(void)
     // pinMode(15, INPUT);
     // attachInterrupt(15, GPIO15Handler, RISING);
 
-    // Setup GPIO for debugging
-    *portConfigRegister(3) = 5;
-    *portConfigRegister(5) = 5;
-    *portConfigRegister(7) = 7;
+    // Setup GPIO for LED
     *portConfigRegister(13) = 5;
-
-    pinMode(3, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(7, OUTPUT);
     pinMode(13, OUTPUT);
-
-    digitalWriteFast(3, LOW);
-    digitalWriteFast(5, LOW);
-    digitalWriteFast(7, LOW);
     digitalWriteFast(13, LOW);
 
     unsigned int i;
@@ -57,10 +46,10 @@ void startup_late_hook(void)
         NVIC_SET_PRIORITY(i, 224);
 }
 
+// replace yield in Arduino
 void yield(void) {}
 
 void GPIO15Handler(void)
 {
-    // if(usb_cdc_line_rtsdtr) printf("GPIO15Handler: %x\n", GPIO1_ISR);
     printf("GPIO15Handler: %x\n", GPIO1_ISR);
 }

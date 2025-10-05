@@ -429,34 +429,6 @@ BaseType_t xPortStartScheduler(void)
     /* Start the timer that generates the tick ISR.  Interrupts are disabled
      * here already. */
     vPortSetupTimerInterrupt();
-    // portENABLE_INTERRUPTS();
-    // uint32_t tick = 0;
-    // while(tick <= 100){
-    //     // if(portNVIC_SYSTICK_CURRENT_VALUE_REG < 10)
-    //     // {
-    //     //     //printf("%d %x %x %x\n", portNVIC_SYSTICK_CURRENT_VALUE_REG, SCB_SHCSR, portNVIC_SYSTICK_CTRL_REG, SCB_ICSR);
-    //     //     //printf("%x ", NVIC_ICER0);
-    //     //     //printf("%x ", NVIC_ICER1);
-    //     //     //printf("%x ", NVIC_ICER2);
-    //     //     //printf("%x ", NVIC_ICER3);
-    //     //     //printf("%x\n", NVIC_ICER4);
-    //     //     uint32_t tick = xTaskGetTickCount();
-    //     //     printf("%d\n", tick);
-    //     // }
-    //     uint32_t tmp_tick = xTaskGetTickCount();
-    //     if(tick != tmp_tick){
-    //         tick = tmp_tick;
-    //         printf("%d\n", tick);
-    //         if(tick % 50 == 0){
-    //             printf("%d %x %x %x\n", SCB_SHCSR, portNVIC_SYSTICK_CTRL_REG, SCB_ICSR);
-    //             printf("%x ", NVIC_ICER0);
-    //             printf("%x ", NVIC_ICER1);
-    //             printf("%x ", NVIC_ICER2);
-    //             printf("%x ", NVIC_ICER3);
-    //             printf("%x\n", NVIC_ICER4);
-    //         }
-    //     }
-    // };
 
     /* Initialise the critical nesting count ready for the first task. */
     uxCriticalNesting = 0;
@@ -602,10 +574,6 @@ void xPortSysTickHandler(void)
             traceISR_EXIT();
         }
         systick_millis_count = (uint32_t)pdTICKS_TO_MS(xTaskGetTickCountFromISR());
-        if (systick_millis_count % 500 == 0)
-        {
-            digitalToggleFast(13);
-        }
     }
     portENABLE_INTERRUPTS();
 }
@@ -849,13 +817,11 @@ __attribute__((weak)) void vPortSetupTimerInterrupt(void)
 
     /* Stop and clear the SysTick. */
     portNVIC_SYSTICK_CTRL_REG = 0UL;
+    portNVIC_SYSTICK_CURRENT_VALUE_REG = 0UL;
 
     /* Configure SysTick to interrupt at the requested rate. */
     portNVIC_SYSTICK_LOAD_REG = (configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ) - 1UL;
-    portNVIC_SYSTICK_CURRENT_VALUE_REG = 0UL;
     portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT_CONFIG | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT);
-    // SCB_SHCSR |= (1UL << 11UL);
-    printf("vPortSetupTimerInterrupt\n");
 }
 /*-----------------------------------------------------------*/
 

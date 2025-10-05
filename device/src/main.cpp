@@ -47,11 +47,15 @@ static void LedBlinkTask(void *parameters) __attribute__((noreturn));
 static void LedBlinkTask(void *parameters)
 {
     (void)printf("LedBlinkTask\n");
+    TickType_t xLastWakeTime;
 
+    xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
-        digitalToggleFast(3);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        digitalToggleFast(13);
+        printf("start %d ms\n", xLastWakeTime);
+        // vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(500));
     }
 }
 
