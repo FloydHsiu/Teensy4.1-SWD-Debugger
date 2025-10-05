@@ -1,4 +1,4 @@
-# LogicAnalyzer-SWD-Debugger
+# Teensy4.1-SWD-Debugger
 
 ## Teensy Development Envirnoment
 
