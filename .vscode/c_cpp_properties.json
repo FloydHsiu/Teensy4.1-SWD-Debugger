@@ -6,11 +6,15 @@
                 "${workspaceFolder}/device/inc",
                 "${workspaceFolder}/freertos/include",
                 "${workspaceFolder}/freertos/portable/GCC/ARM_CM7/r0p1",
-                "${workspaceFolder}/cores/teensy4"
+                "${workspaceFolder}/cores/teensy4",
+                "${workspaceFolder}/CMSIS-DAP/Firmware/Include",
+                "${workspaceFolder}/CMSIS_6/CMSIS/Core/Include"
             ],
             "defines": [
+                "__GNUC__",
+                "__ARM_ARCH_PROFILE='M'",
                 "F_CPU=600000000",
-                "USB_SERIAL",
+                "USB_CMSIS_DAP",
                 "LAYOUT_US_ENGLISH",
                 "USING_MAKEFILE",
                 "__IMXRT1062__",
@@ -18,7 +22,6 @@
                 "TEENSYDUINO=159",
                 "ARDUINO_TEENSY41",
                 "PRINT_DEBUG_STUFF"
-                //"PRINT_DEBUG_USING_USB"
             ],
             "cStandard": "c17",
             "cppStandard": "c++17",

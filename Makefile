@@ -30,6 +30,8 @@
 CORES_DIR = cores/teensy4
 FREERTOS_DIR = freertos
 FREERTOS_HEAP_DIR = $(FREERTOS_DIR)/portable/MemMang
+CMSIS_6_DIR = CMSIS_6/CMSIS/Core
+CMSIS_DAP_DIR = CMSIS-DAP/Firmware
 TARGET_DIR = device
 
 # Use these lines for Teensy 4.0
@@ -50,7 +52,7 @@ OPTIONS = -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DUSING_MAKEFILE
 
 # usb serial
 # OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_SERIAL -DPRINT_DEBUG_USING_USB
-OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_SERIAL
+OPTIONS += -DPRINT_DEBUG_STUFF -DUSB_CMSIS_DAP
 
 #
 # USB Type configuration:
@@ -151,6 +153,7 @@ LIBS = -lm -lstdc++ -lfreertos -lcores
 # names for the compiler programs
 FREERTOS_LIB = $(BUILD_DIR)/libfreertos.a
 CORES_LIB = $(BUILD_DIR)/libcores.a
+CMSIS_DAP_LIB = $(BUILD_DIR)/libCMSIS-DAP.a
 
 CC = $(COMPILERPATH)/arm-none-eabi-gcc
 CXX = $(COMPILERPATH)/arm-none-eabi-g++
@@ -167,10 +170,13 @@ FREERTOS_SRC := $(wildcard $(FREERTOS_DIR)/*.c)
 FREERTOS_HEAP_SRC := $(FREERTOS_HEAP_DIR)/heap_1.c
 CORES_C_SRC := $(wildcard $(CORES_DIR)/*.c)
 CORES_CPP_SRC := $(wildcard $(CORES_DIR)/*.cpp)
+CMSIS_DAP_C_SRC := $(wildcard $(CMSIS_DAP_DIR)/Source/*.c)
 
 FREERTOS_INC := -I$(FREERTOS_DIR)/include -I$(TARGET_DIR)/inc -I$(CORES_DIR)
 CORES_INC := -I$(CORES_DIR)
-INC := $(FREERTOS_INC) $(CORES_INC)
+CMSIS_6_INC := -I$(CMSIS_6_DIR)/Include
+CMSIS_DAP_INC := -I$(CMSIS_DAP_DIR)/Include -I$(TARGET_DIR)/inc -I$(CORES_DIR)
+INC := $(FREERTOS_INC) $(CORES_INC) $(CMSIS_6_INC) $(CMSIS_DAP_INC)
 
 OBJS := $(patsubst $(TARGET_DIR)/src/%.c,$(BUILD_DIR)/%.o,$(C_SRC))
 OBJS += $(patsubst $(TARGET_DIR)/src/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRC))
@@ -178,6 +184,7 @@ FREERTOS_OBJS := $(patsubst $(FREERTOS_DIR)/%.c,$(BUILD_DIR)/freertos/%.o,$(FREE
 FREERTOS_HEAP_OBJS := $(patsubst $(FREERTOS_HEAP_DIR)/%.c,$(BUILD_DIR)/freertos/portable/MemMang/%.o,$(FREERTOS_HEAP_SRC))
 CORES_OBJS := $(patsubst $(CORES_DIR)/%.c,$(BUILD_DIR)/cores/%.o,$(CORES_C_SRC))
 CORES_OBJS += $(patsubst $(CORES_DIR)/%.cpp,$(BUILD_DIR)/cores/%.o,$(CORES_CPP_SRC))
+CMSIS_DAP_OBJS := $(patsubst $(CMSIS_DAP_DIR)/Source/%.c,$(BUILD_DIR)/CMSIS-DAP/%.o,$(CMSIS_DAP_C_SRC))
 
 TARGET_ELF := $(BUILD_DIR)/$(TARGET).elf
 TARGET_HEX := $(BUILD_DIR)/$(TARGET).hex
@@ -212,6 +219,15 @@ $(CORES_LIB): $(CORES_OBJS)
 	@echo "Archiving $@"
 	$(AR) rcs $@ $^
 
+# CMSIS-DAP
+$(BUILD_DIR)/CMSIS-DAP/%.o: $(CMSIS_DAP_DIR)/Source/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(CMSIS_6_INC) $(CMSIS_DAP_INC)  -c -o $@ $<
+
+$(CMSIS_DAP_LIB): $(CMSIS_DAP_OBJS)
+	@echo "Archiving $@"
+	$(AR) rcs $@ $^
+
 # Target
 $(BUILD_DIR)/%.o: $(TARGET_DIR)/src/%.c
 	@mkdir -p $(@D)
@@ -221,7 +237,7 @@ $(BUILD_DIR)/%.o: $(TARGET_DIR)/src/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INC) -c -o $@ $<
 
-$(TARGET_ELF): $(OBJS) $(FREERTOS_LIB) $(CORES_LIB) $(MCU_LD)
+$(TARGET_ELF): $(OBJS) $(FREERTOS_LIB) $(CORES_LIB) $(CMSIS_DAP_LIB) $(MCU_LD)
 	@echo "Linking $@"
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	$(READELF) -a $@ > $(BUILD_DIR)/$(TARGET)_list.txt
