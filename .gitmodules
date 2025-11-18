@@ -1,9 +1,12 @@
 [submodule "freertos"]
 	path = freertos
-	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
 [submodule "cores"]
 	path = cores
-	url = https://github.com/PaulStoffregen/cores.git
+	url = https://github.com/PaulStoffregen/cores
 [submodule "CMSIS-DAP"]
 	path = CMSIS-DAP
 	url = https://github.com/ARM-software/CMSIS-DAP
+[submodule "CMSIS_6"]
+	path = CMSIS_6
+	url = https://github.com/ARM-software/CMSIS_6
