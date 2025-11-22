@@ -31,7 +31,7 @@
 // #if F_CPU >= 20000000
 
 #define USB_DESC_LIST_DEFINE
-#include "usb_desc_cmsis_dap.h"
+#include "cmsis_dap/usb_desc_cmsis_dap.h"
 #ifdef NUM_ENDPOINTS
 #include "avr/pgmspace.h"
 #include "avr_functions.h"
@@ -252,17 +252,17 @@ PROGMEM const uint8_t usb_config_descriptor_480[CONFIG_DESC_SIZE] = {
     // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
     7,                                                              // bLength
     5,                                                              // bDescriptorType
-    CMSIS_DAP_IF0_EP1_ADDR,                                         // bEndpointAddress
-    0x02,                                                           // bmAttributes (0x02=bulk)
-    LSB(CMSIS_DAP_IF0_EP1_HS_WMAX), MSB(CMSIS_DAP_IF0_EP1_HS_WMAX), // wMaxPacketSize
-    CMSIS_DAP_IF0_EP1_BINTERVAL,                                    // bInterval
-    // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-    7,                                                              // bLength
-    5,                                                              // bDescriptorType
     CMSIS_DAP_IF0_EP2_ADDR,                                         // bEndpointAddress
     0x02,                                                           // bmAttributes (0x02=bulk)
     LSB(CMSIS_DAP_IF0_EP2_HS_WMAX), MSB(CMSIS_DAP_IF0_EP2_HS_WMAX), // wMaxPacketSize
     CMSIS_DAP_IF0_EP2_BINTERVAL,                                    // bInterval
+    // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
+    7,                                                              // bLength
+    5,                                                              // bDescriptorType
+    CMSIS_DAP_IF0_EP3_ADDR,                                         // bEndpointAddress
+    0x02,                                                           // bmAttributes (0x02=bulk)
+    LSB(CMSIS_DAP_IF0_EP3_HS_WMAX), MSB(CMSIS_DAP_IF0_EP3_HS_WMAX), // wMaxPacketSize
+    CMSIS_DAP_IF0_EP3_BINTERVAL,                                    // bInterval
 #endif                                                              // CMSIS_DAP_IF0_NUM
 };
 
@@ -293,17 +293,17 @@ PROGMEM const uint8_t usb_config_descriptor_12[CONFIG_DESC_SIZE] = {
     // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
     7,                                                              // bLength
     5,                                                              // bDescriptorType
-    CMSIS_DAP_IF0_EP1_ADDR,                                         // bEndpointAddress
-    0x02,                                                           // bmAttributes (0x02=bulk)
-    LSB(CMSIS_DAP_IF0_EP1_FS_WMAX), MSB(CMSIS_DAP_IF0_EP1_FS_WMAX), // wMaxPacketSize
-    CMSIS_DAP_IF0_EP1_BINTERVAL,                                    // bInterval
-    // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
-    7,                                                              // bLength
-    5,                                                              // bDescriptorType
     CMSIS_DAP_IF0_EP2_ADDR,                                         // bEndpointAddress
     0x02,                                                           // bmAttributes (0x02=bulk)
     LSB(CMSIS_DAP_IF0_EP2_FS_WMAX), MSB(CMSIS_DAP_IF0_EP2_FS_WMAX), // wMaxPacketSize
     CMSIS_DAP_IF0_EP2_BINTERVAL,                                    // bInterval
+    // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
+    7,                                                              // bLength
+    5,                                                              // bDescriptorType
+    CMSIS_DAP_IF0_EP3_ADDR,                                         // bEndpointAddress
+    0x02,                                                           // bmAttributes (0x02=bulk)
+    LSB(CMSIS_DAP_IF0_EP3_FS_WMAX), MSB(CMSIS_DAP_IF0_EP3_FS_WMAX), // wMaxPacketSize
+    CMSIS_DAP_IF0_EP3_BINTERVAL,                                    // bInterval
 #endif                                                              // CMSIS_DAP_IF0_NUM
 };
 

@@ -29,6 +29,7 @@
  */
 
 #include "Arduino.h"
+#include "cmsis_dap/task_cmsis_dap.h"
 #include "debug/printf.h"
 #include "imxrt.h"
 
@@ -53,9 +54,9 @@ static void LedBlinkTask(void *parameters)
     for (;;)
     {
         digitalToggleFast(13);
-        printf("start %d ms\n", xLastWakeTime);
-        // vTaskDelay(pdMS_TO_TICKS(500));
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(500));
+        // printf("start %d ms\n", xLastWakeTime);
+        vTaskDelay(pdMS_TO_TICKS(500));
+        // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(500));
     }
 }
 
@@ -63,11 +64,15 @@ extern "C" int main(void)
 {
     static StaticTask_t led_blink_task_tcb;
     static StackType_t led_blink_task_stack[configMINIMAL_STACK_SIZE];
+    static StaticTask_t cmsis_dap_task_tcb;
+    static StackType_t cmsis_dap_task_stack[configMINIMAL_STACK_SIZE];
 
     (void)printf("Example FreeRTOS Project\n");
 
     (void)xTaskCreateStatic(LedBlinkTask, "LedBlink", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 1U,
                             &(led_blink_task_stack[0]), &(led_blink_task_tcb));
+    (void)xTaskCreateStatic(CmsisDapTask, "CmsisDapTask", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 1U,
+                            &(cmsis_dap_task_stack[0]), &(cmsis_dap_task_tcb));
 
     /* Start the scheduler. */
     vTaskStartScheduler();
