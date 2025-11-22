@@ -136,7 +136,7 @@ This information includes:
 
 /// Indicate that UART Communication via USB COM Port is available.
 /// This information is returned by the command \ref DAP_Info as part of <b>Capabilities</b>.
-#define DAP_UART_USB_COM_PORT 1 ///< USB COM Port:  1 = available, 0 = not available.
+#define DAP_UART_USB_COM_PORT 0 ///< USB COM Port:  1 = available, 0 = not available.
 
 /// Debug Unit is connected to fixed Target Device.
 /// The Debug Unit may be part of an evaluation board and always connected to a fixed

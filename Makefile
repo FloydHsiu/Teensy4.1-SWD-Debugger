@@ -147,7 +147,7 @@ BUILD_DIR = build
 LDFLAGS = -Os -Wl,--gc-sections,--relax $(SPECS) $(CPUOPTIONS) -T$(MCU_LD) -L$(BUILD_DIR)
 
 # additional libraries to link
-LIBS = -lm -lstdc++ -lfreertos -lcores
+LIBS = -lm -lstdc++ -lfreertos -lcores -lCMSIS-DAP
 # LIBS = -larm_cortexM7lfsp_math -lm -lstdc++ -lfreertos -lcores
 
 # names for the compiler programs
@@ -164,8 +164,9 @@ SIZE = $(COMPILERPATH)/arm-none-eabi-size
 READELF = $(COMPILERPATH)/arm-none-eabi-readelf
 
 # automatically create lists of the sources and objects
-C_SRC := $(wildcard $(TARGET_DIR)/src/*.c)
-CPP_SRC := $(wildcard $(TARGET_DIR)/src/*.cpp)
+# Recursively find all C and C++ files in device/src and subdirectories
+C_SRC := $(shell find $(TARGET_DIR)/src -name "*.c" -type f)
+CPP_SRC := $(shell find $(TARGET_DIR)/src -name "*.cpp" -type f)
 FREERTOS_SRC := $(wildcard $(FREERTOS_DIR)/*.c)
 FREERTOS_HEAP_SRC := $(FREERTOS_HEAP_DIR)/heap_1.c
 CORES_C_SRC := $(wildcard $(CORES_DIR)/*.c)
@@ -178,8 +179,9 @@ CMSIS_6_INC := -I$(CMSIS_6_DIR)/Include
 CMSIS_DAP_INC := -I$(CMSIS_DAP_DIR)/Include -I$(TARGET_DIR)/inc -I$(CORES_DIR)
 INC := $(FREERTOS_INC) $(CORES_INC) $(CMSIS_6_INC) $(CMSIS_DAP_INC)
 
-OBJS := $(patsubst $(TARGET_DIR)/src/%.c,$(BUILD_DIR)/%.o,$(C_SRC))
-OBJS += $(patsubst $(TARGET_DIR)/src/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRC))
+# Map source files to object files, preserving directory structure from src/ onwards
+OBJS := $(patsubst $(TARGET_DIR)/src/%.c,$(BUILD_DIR)/src/%.o,$(C_SRC))
+OBJS += $(patsubst $(TARGET_DIR)/src/%.cpp,$(BUILD_DIR)/src/%.o,$(CPP_SRC))
 FREERTOS_OBJS := $(patsubst $(FREERTOS_DIR)/%.c,$(BUILD_DIR)/freertos/%.o,$(FREERTOS_SRC))
 FREERTOS_HEAP_OBJS := $(patsubst $(FREERTOS_HEAP_DIR)/%.c,$(BUILD_DIR)/freertos/portable/MemMang/%.o,$(FREERTOS_HEAP_SRC))
 CORES_OBJS := $(patsubst $(CORES_DIR)/%.c,$(BUILD_DIR)/cores/%.o,$(CORES_C_SRC))
@@ -228,12 +230,16 @@ $(CMSIS_DAP_LIB): $(CMSIS_DAP_OBJS)
 	@echo "Archiving $@"
 	$(AR) rcs $@ $^
 
-# Target
-$(BUILD_DIR)/%.o: $(TARGET_DIR)/src/%.c
+# vpath allows make to find source files in device/src/ and all subdirectories
+vpath %.c $(dir $(C_SRC))
+vpath %.cpp $(dir $(CPP_SRC))
+
+# Target (generic rule for all device/src and subdirectory C/CPP files)
+$(BUILD_DIR)/src/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(INC) -c -o $@ $<
 
-$(BUILD_DIR)/%.o: $(TARGET_DIR)/src/%.cpp
+$(BUILD_DIR)/src/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INC) -c -o $@ $<
 

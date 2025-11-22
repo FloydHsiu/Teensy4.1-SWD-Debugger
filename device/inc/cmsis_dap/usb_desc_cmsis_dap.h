@@ -24,13 +24,15 @@
     {                                                                                                           \
         'T', 'e', 'e', 'n', 's', 'y', 'd', 'u', 'i', 'n', 'o', ' ', 'C', 'M', 'S', 'I', 'S', '-', 'D', 'A', 'P' \
     }
-#define PRODUCT_NAME_LEN 21
-#define EP0_SIZE         64
-#define NUM_ENDPOINTS    3
-#define NUM_INTERFACE    1
-#define DEVICE_CLASS     0xFF
-#define DEVICE_SUBCLASS  0x00
-#define DEVICE_PROTOCOL  0x00
+#define PRODUCT_NAME_LEN      21
+#define EP0_SIZE              64
+#define NUM_ENDPOINTS         3
+#define NUM_INTERFACE         1
+#define DEVICE_CLASS          0xFF
+#define DEVICE_SUBCLASS       0x00
+#define DEVICE_PROTOCOL       0x00
+#define CMSIS_DAP_RX_ENDPOINT 2
+#define CMSIS_DAP_TX_ENDPOINT 3
 
 // CMSIS-DAP CustomClass Interface 0 Configuration
 #define CMSIS_DAP_INTERFACE         0
@@ -38,24 +40,24 @@
 #define CMSIS_DAP_IF0_CLASS         0xFF
 #define CMSIS_DAP_IF0_SUBCLASS      0x00
 #define CMSIS_DAP_IF0_PROTOCOL      0x00
-#define CMSIS_DAP_IF0_NUM_ENDPOINTS 3
+#define CMSIS_DAP_IF0_NUM_ENDPOINTS 2
 
-// IF0 EP1: OUT, address 0x81 (bulk, FS:64/HS:512)
-#define CMSIS_DAP_IF0_EP1_ADDR      0x02
-#define CMSIS_DAP_IF0_EP1_FS_WMAX   64
-#define CMSIS_DAP_IF0_EP1_HS_WMAX   512
-#define CMSIS_DAP_IF0_EP1_BINTERVAL 0
-
-// IF0 EP2: IN, address 0x02 (bulk, FS:64/HS:512)
-#define CMSIS_DAP_IF0_EP2_ADDR      0x83
+// IF0 EP1: OUT, address 0x02 (bulk, FS:64/HS:512) RX
+#define CMSIS_DAP_IF0_EP2_ADDR      0x02
 #define CMSIS_DAP_IF0_EP2_FS_WMAX   64
 #define CMSIS_DAP_IF0_EP2_HS_WMAX   512
 #define CMSIS_DAP_IF0_EP2_BINTERVAL 0
 
+// IF0 EP2: IN, address 0x83 (bulk, FS:64/HS:512) TX
+#define CMSIS_DAP_IF0_EP3_ADDR      0x83
+#define CMSIS_DAP_IF0_EP3_FS_WMAX   64
+#define CMSIS_DAP_IF0_EP3_HS_WMAX   512
+#define CMSIS_DAP_IF0_EP3_BINTERVAL 0
+
 #define EXPERIMENTAL_INTERFACE 1
 
-#define ENDPOINT2_CONFIG         ENDPOINT_RECEIVE_UNUSED + ENDPOINT_TRANSMIT_BULK
-#define ENDPOINT3_CONFIG         ENDPOINT_RECEIVE_BULK + ENDPOINT_TRANSMIT_UNUSED
+#define ENDPOINT2_CONFIG         ENDPOINT_RECEIVE_BULK + ENDPOINT_TRANSMIT_UNUSED
+#define ENDPOINT3_CONFIG         ENDPOINT_RECEIVE_UNUSED + ENDPOINT_TRANSMIT_BULK
 #define MS_OS_EXT_COMPAT_ID_SIZE 40
 #define MS_OS_EXT_COMPAT_ID      "WINUSB"
 #define MS_OS_EXT_PROP0_SIZE     142

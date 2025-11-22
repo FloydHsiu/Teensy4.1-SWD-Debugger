@@ -1,9 +1,10 @@
 #include "usb_dev.h"
 #define USB_DESC_LIST_DEFINE
 #include "avr/pgmspace.h"
+#include "cmsis_dap/usb_cmsis_dap.h"
+#include "cmsis_dap/usb_desc_cmsis_dap.h"
 #include "core_pins.h" // for delay()
 #include "debug/printf.h"
-#include "usb_desc_cmsis_dap.h"
 #include <string.h>
 
 // #define LOG_SIZE  20
@@ -457,7 +458,7 @@ static void endpoint0_setup(uint64_t setupdata)
             USB1_ENDPTCTRL7 = ENDPOINT7_CONFIG;
 #endif
 #if defined(CMSIS_DAP_INTERFACE)
-            // pass
+            usb_cmsis_dap_configure();
 #endif
             // #if defined(EXPERIMENTAL_INTERFACE)
             //             memset(endpoint_queue_head + 2, 0, sizeof(endpoint_t) * 2);
