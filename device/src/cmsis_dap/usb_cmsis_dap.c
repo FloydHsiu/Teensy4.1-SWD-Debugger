@@ -161,6 +161,16 @@ int usb_cmsis_dap_recv(void *buffer, uint32_t timeout)
     return len;
 }
 
+int usb_cmsis_dap_rx_available(void)
+{
+    if (!usb_configuration)
+        return 0;
+    if (rx_head != rx_tail)
+        return rx_packet_size;
+    // if (!(usb_transfer_status(rx_transfer) & 0x80)) return MTP_RX_SIZE;
+    return 0;
+}
+
 /*************************************************************************/
 /**                             Send                                    **/
 /*************************************************************************/
@@ -179,6 +189,7 @@ int usb_cmsis_dap_send(const void *buffer, uint32_t len, uint32_t timeout)
         if (systick_millis_count - wait_begin_at > timeout)
             return 0;
     }
+    printf("usb_cmsis_dap_send\n");
     uint8_t *txdata = tx_buffer + (tx_head * TX_SIZE);
     memcpy(txdata, buffer, len);
     arm_dcache_flush_delete(txdata, tx_packet_size);
