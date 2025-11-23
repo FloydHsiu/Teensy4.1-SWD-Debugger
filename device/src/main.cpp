@@ -53,7 +53,7 @@ static void LedBlinkTask(void *parameters)
     xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
-        digitalToggleFast(13);
+        // digitalToggleFast(13);
         // printf("start %d ms\n", xLastWakeTime);
         vTaskDelay(pdMS_TO_TICKS(500));
         // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(500));

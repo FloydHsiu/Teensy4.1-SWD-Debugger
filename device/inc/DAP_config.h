@@ -47,10 +47,13 @@ This information includes:
 #include "RTE_Components.h"
 #include CMSIS_device_header
 #else
-#include "cmsis_compiler.h"
-#include "imxrt.h"
-// #include "core_cm7.h"
-#include "core_pins.h"
+#include "cmsis_dap/usb_desc_cmsis_dap.h"
+
+#include <cmsis_compiler.h>
+#include <core_pins.h>
+#include <imxrt.h>
+#include <string.h>
+// #include <core_cm7.h>
 #endif
 
 /// Processor Clock of the Cortex-M MCU used in the Debug Unit.
@@ -84,7 +87,7 @@ This information includes:
 /// Default communication speed on the Debug Access Port for SWD and JTAG mode.
 /// Used to initialize the default SWD/JTAG clock frequency.
 /// The command \ref DAP_SWJ_Clock can be used to overwrite this default setting.
-#define DAP_DEFAULT_SWJ_CLOCK 1000000U ///< Default SWD/JTAG clock frequency in Hz.
+#define DAP_DEFAULT_SWJ_CLOCK 1000U ///< Default SWD/JTAG clock frequency in Hz.
 
 /// Maximum Package Size for Command and Response data.
 /// This configuration settings is used to optimize the communication performance with the
@@ -163,8 +166,10 @@ static const char TargetBoardName[] = TARGET_BOARD_NAME;
 */
 __STATIC_INLINE uint8_t DAP_GetVendorString(char *str)
 {
-    (void)str;
-    return (0U);
+    char vendor_name[] = MANUFACTURER_NAME;
+    memset(str, 0, sizeof(vendor_name) + 1);
+    memcpy(str, vendor_name, sizeof(vendor_name));
+    return sizeof(vendor_name) + 1;
 }
 
 /** Get Product Name string.
@@ -173,8 +178,10 @@ __STATIC_INLINE uint8_t DAP_GetVendorString(char *str)
 */
 __STATIC_INLINE uint8_t DAP_GetProductString(char *str)
 {
-    (void)str;
-    return (0U);
+    char product_name[] = PRODUCT_NAME;
+    memset(str, 0U, sizeof(product_name) + 1);
+    memcpy(str, product_name, sizeof(product_name));
+    return sizeof(product_name) + 1;
 }
 
 /** Get Serial Number string.
@@ -308,9 +315,9 @@ of the same I/O port. The following SWDIO I/O Pin functions are provided:
 
 // Configure DAP I/O pins ------------------------------
 
-#define PIN_SWCLK  0U
-#define PIN_SWDIO  1U
-#define PIN_nRESET 2U
+#define PIN_nRESET 3U
+#define PIN_SWDIO  5U
+#define PIN_SWCLK  7U
 
 /** Setup JTAG I/O pins: TCK, TMS, TDI, TDO, nTRST, and nRESET.
 Configures the DAP Hardware I/O pins for JTAG mode:
@@ -548,7 +555,10 @@ __STATIC_INLINE void LED_CONNECTED_OUT(uint32_t bit) {}
            - 1: Target Running LED ON: program execution in target started.
            - 0: Target Running LED OFF: program execution in target stopped.
 */
-__STATIC_INLINE void LED_RUNNING_OUT(uint32_t bit) {}
+__STATIC_INLINE void LED_RUNNING_OUT(uint32_t bit)
+{
+    digitalWriteFast(13, bit);
+}
 
 ///@}
 
