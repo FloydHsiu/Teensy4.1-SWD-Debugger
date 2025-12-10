@@ -51,6 +51,7 @@ This information includes:
 
 #include <cmsis_compiler.h>
 #include <core_pins.h>
+#include <debug/printf.h>
 #include <imxrt.h>
 #include <string.h>
 // #include <core_cm7.h>
@@ -315,9 +316,10 @@ of the same I/O port. The following SWDIO I/O Pin functions are provided:
 
 // Configure DAP I/O pins ------------------------------
 
-#define PIN_nRESET 3U
-#define PIN_SWDIO  5U
-#define PIN_SWCLK  7U
+#define PIN_nRESET      3U
+#define PIN_SWDIO       5U
+#define PIN_SWCLK       7U
+#define PIN_LED_RUNNING 13U
 
 /** Setup JTAG I/O pins: TCK, TMS, TDI, TDO, nTRST, and nRESET.
 Configures the DAP Hardware I/O pins for JTAG mode:
@@ -336,12 +338,6 @@ Configures the DAP Hardware I/O pins for Serial Wire Debug (SWD) mode:
 */
 __STATIC_INLINE void PORT_SWD_SETUP(void)
 {
-    // *portConfigRegister(PIN_SWCLK) = 5;
-    // *portConfigRegister(PIN_SWDIO) = 5;
-    // *portConfigRegister(PIN_nRESET) = 5;
-    // *portControlRegister(PIN_SWCLK) = IOMUXC_PAD_DSE(6) | IOMUXC_PAD_PKE;
-    // *portControlRegister(PIN_SWDIO) = IOMUXC_PAD_DSE(6) | IOMUXC_PAD_PKE;
-    // *portControlRegister(PIN_nRESET) = IOMUXC_PAD_DSE(6) | IOMUXC_PAD_PKE;
     pinMode(PIN_SWCLK, OUTPUT);
     pinMode(PIN_SWDIO, OUTPUT);
     pinMode(PIN_nRESET, OUTPUT);
@@ -356,12 +352,9 @@ Disables the DAP Hardware I/O pins which configures:
 */
 __STATIC_INLINE void PORT_OFF(void)
 {
-    // *portConfigRegister(PIN_SWCLK) = IOMUXC_PAD_HYS;
-    // *portConfigRegister(PIN_SWDIO) = IOMUXC_PAD_HYS;
-    // *portConfigRegister(PIN_nRESET) = IOMUXC_PAD_HYS;
-    pinMode(PIN_SWCLK, INPUT_DISABLE);
-    pinMode(PIN_SWDIO, INPUT_DISABLE);
-    pinMode(PIN_nRESET, INPUT_DISABLE);
+    pinMode(PIN_SWCLK, INPUT);
+    pinMode(PIN_SWDIO, INPUT_PULLUP);
+    pinMode(PIN_nRESET, INPUT_PULLUP);
 }
 
 // SWCLK/TCK I/O pin -------------------------------------
@@ -371,16 +364,15 @@ __STATIC_INLINE void PORT_OFF(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_SWCLK_TCK_IN(void)
 {
-    pinMode(PIN_SWCLK, INPUT);
-    return digitalReadFast(PIN_SWCLK);
+    return 0;
 }
 
 /** SWCLK/TCK I/O pin: Set Output to High.
 Set the SWCLK/TCK DAP hardware I/O pin to high level.
 */
+extern volatile int swclk_count;
 __STATIC_FORCEINLINE void PIN_SWCLK_TCK_SET(void)
 {
-    pinMode(PIN_SWCLK, OUTPUT);
     digitalWriteFast(PIN_SWCLK, HIGH);
 }
 
@@ -389,7 +381,6 @@ Set the SWCLK/TCK DAP hardware I/O pin to low level.
 */
 __STATIC_FORCEINLINE void PIN_SWCLK_TCK_CLR(void)
 {
-    pinMode(PIN_SWCLK, OUTPUT);
     digitalWriteFast(PIN_SWCLK, LOW);
 }
 
@@ -400,7 +391,7 @@ __STATIC_FORCEINLINE void PIN_SWCLK_TCK_CLR(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_SWDIO_TMS_IN(void)
 {
-    pinMode(PIN_SWDIO, INPUT);
+    pinMode(PIN_SWDIO, INPUT_PULLUP);
     return digitalReadFast(PIN_SWDIO);
 }
 
@@ -427,7 +418,6 @@ __STATIC_FORCEINLINE void PIN_SWDIO_TMS_CLR(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN(void)
 {
-    pinMode(PIN_SWDIO, INPUT);
     return digitalReadFast(PIN_SWDIO);
 }
 
@@ -436,7 +426,6 @@ __STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_OUT(uint32_t bit)
 {
-    pinMode(PIN_SWDIO, OUTPUT);
     digitalWriteFast(PIN_SWDIO, bit);
 }
 
@@ -455,7 +444,7 @@ called prior \ref PIN_SWDIO_IN function calls.
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_OUT_DISABLE(void)
 {
-    pinMode(PIN_SWDIO, INPUT);
+    pinMode(PIN_SWDIO, INPUT_PULLUP);
 }
 
 // TDI Pin I/O ---------------------------------------------
@@ -513,7 +502,7 @@ __STATIC_FORCEINLINE void PIN_nTRST_OUT(uint32_t bit)
 */
 __STATIC_FORCEINLINE uint32_t PIN_nRESET_IN(void)
 {
-    pinMode(PIN_nRESET, INPUT);
+    pinMode(PIN_nRESET, INPUT_PULLUP);
     return digitalReadFast(PIN_nRESET);
 }
 
@@ -557,7 +546,7 @@ __STATIC_INLINE void LED_CONNECTED_OUT(uint32_t bit) {}
 */
 __STATIC_INLINE void LED_RUNNING_OUT(uint32_t bit)
 {
-    digitalWriteFast(13, bit);
+    digitalWriteFast(PIN_LED_RUNNING, bit);
 }
 
 ///@}
@@ -603,7 +592,11 @@ Status LEDs. In detail the operation of Hardware I/O and LED pins are enabled an
 */
 __STATIC_INLINE void DAP_SETUP(void)
 {
-    ;
+    pinMode(PIN_SWCLK, INPUT_PULLDOWN);
+    pinMode(PIN_SWDIO, INPUT_PULLUP);
+    pinMode(PIN_nRESET, INPUT_PULLUP);
+    pinMode(PIN_LED_RUNNING, OUTPUT);
+    LED_RUNNING_OUT(0);
 }
 
 /** Reset Target Device with custom specific I/O pin or command sequence.
