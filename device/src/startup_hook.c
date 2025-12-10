@@ -37,7 +37,6 @@ void startup_late_hook(void)
     // attachInterrupt(15, GPIO15Handler, RISING);
 
     // Setup GPIO for LED
-    *portConfigRegister(13) = 5;
     pinMode(13, OUTPUT);
     digitalWriteFast(13, LOW);
 
