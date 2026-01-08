@@ -400,7 +400,6 @@ Set the SWDIO/TMS DAP hardware I/O pin to high level.
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_TMS_SET(void)
 {
-    pinMode(PIN_SWDIO, OUTPUT);
     digitalWriteFast(PIN_SWDIO, HIGH);
 }
 
@@ -409,7 +408,6 @@ Set the SWDIO/TMS DAP hardware I/O pin to low level.
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_TMS_CLR(void)
 {
-    pinMode(PIN_SWDIO, OUTPUT);
     digitalWriteFast(PIN_SWDIO, LOW);
 }
 
@@ -426,7 +424,7 @@ __STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_SWDIO_OUT(uint32_t bit)
 {
-    digitalWriteFast(PIN_SWDIO, bit);
+    digitalWriteFast(PIN_SWDIO, bit & 1U);
 }
 
 /** SWDIO I/O pin: Switch to Output mode (used in SWD mode only).
