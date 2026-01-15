@@ -55,6 +55,8 @@ git submodule update --init
 
 ### build
 
+You may find `build` folder in project root path and `teensy41_swd_debugger.hex` is the firmware bin that can be uploaded to device.
+
 ```sh
 make
 ```

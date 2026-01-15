@@ -45,7 +45,7 @@ MCU_LD = $(TARGET_DIR)/imxrt1062_t41.ld
 MCU_DEF = ARDUINO_TEENSY41
 
 # The name of your project (used to name the compiled .hex file)
-TARGET = logicanalyzer
+TARGET = teensy41_swd_debugger
 
 # configurable options
 OPTIONS = -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DUSING_MAKEFILE
@@ -188,6 +188,7 @@ CORES_OBJS := $(patsubst $(CORES_DIR)/%.c,$(BUILD_DIR)/cores/%.o,$(CORES_C_SRC))
 CORES_OBJS += $(patsubst $(CORES_DIR)/%.cpp,$(BUILD_DIR)/cores/%.o,$(CORES_CPP_SRC))
 CMSIS_DAP_OBJS := $(patsubst $(CMSIS_DAP_DIR)/Source/%.c,$(BUILD_DIR)/CMSIS-DAP/%.o,$(CMSIS_DAP_C_SRC))
 
+TARGET_ASM := $(BUILD_DIR)/$(TARGET).asm
 TARGET_ELF := $(BUILD_DIR)/$(TARGET).elf
 TARGET_HEX := $(BUILD_DIR)/$(TARGET).hex
 
@@ -247,7 +248,7 @@ $(TARGET_ELF): $(OBJS) $(FREERTOS_LIB) $(CORES_LIB) $(CMSIS_DAP_LIB) $(MCU_LD)
 	@echo "Linking $@"
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	$(READELF) -a $@ > $(BUILD_DIR)/$(TARGET)_list.txt
-	$(OBJDUMP) -Sdl $@ > build/logicanalyzer.asm
+	$(OBJDUMP) -Sdl $@ > $(TARGET_ASM)
 
 $(TARGET_HEX): $(TARGET_ELF)
 	$(SIZE) $<
