@@ -155,7 +155,6 @@ uint32_t CmsisDapExecuteCommand(const uint8_t *request, uint8_t *response)
 void CmsisDapTask(void *parameters)
 {
     (void)printf("CmsisDapTask\n");
-    DAP_Setup();
     uint16_t request_len = 0, response_len = 0;
     for (;;)
     {

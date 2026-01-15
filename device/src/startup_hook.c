@@ -1,4 +1,4 @@
-#include "Arduino.h"
+#include "DAP_config.h"
 #include "imxrt.h"
 
 #include <FreeRTOS.h>
@@ -13,7 +13,6 @@ extern volatile uint8_t usb_cdc_line_rtsdtr;
 FASTRUN void xPortPendSVHandler(void);
 FASTRUN void vPortSVCHandler(void);
 FASTRUN void xPortSysTickHandler(void);
-FASTRUN void GPIO15Handler(void);
 
 void startup_late_hook(void)
 {
@@ -32,23 +31,12 @@ void startup_late_hook(void)
     SYST_RVR = 0;
     SYST_CVR = 0;
 
-    // Setup GPIO Pin 15 interrupt
-    // pinMode(15, INPUT);
-    // attachInterrupt(15, GPIO15Handler, RISING);
-
-    // Setup GPIO for LED
-    pinMode(13, OUTPUT);
-    digitalWriteFast(13, LOW);
-
     unsigned int i;
     for (i = 0; i < NVIC_NUM_INTERRUPTS; i++)
         NVIC_SET_PRIORITY(i, 224);
+
+    DAP_SETUP();
 }
 
 // replace yield in Arduino
 void yield(void) {}
-
-void GPIO15Handler(void)
-{
-    printf("GPIO15Handler: %x\n", GPIO1_ISR);
-}
