@@ -1,6 +1,6 @@
 # Teensy 4.1 SWD Debugger
 
-This project implements a CMSIS-DAP compliant SWD debugger using a Teensy 4.1 board. It leverages FreeRTOS for task management and the official ARM CMSIS-DAP library to provide debugging capabilities for ARM Cortex-M microcontrollers.
+This project implements a CMSIS-DAP compliant SWD debugger using a Teensy 4.1 board. It leverages FreeRTOS for task management and the CMSIS-DAP library to provide debugging capabilities for ARM Cortex-M microcontrollers.
 
 ## Overview
 
