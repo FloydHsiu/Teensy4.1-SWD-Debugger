@@ -24,7 +24,13 @@
     {                                                                                                           \
         'T', 'e', 'e', 'n', 's', 'y', 'd', 'u', 'i', 'n', 'o', ' ', 'C', 'M', 'S', 'I', 'S', '-', 'D', 'A', 'P' \
     }
-#define PRODUCT_NAME_LEN      21
+#define PRODUCT_NAME_LEN 21
+#define PRODUCT_FIRMWARE_VERSION \
+    {                            \
+        'V', '0', '.', '1'       \
+    }
+#define PRODUCT_FIRMWARE_VERSION_LEN 4
+
 #define EP0_SIZE              64
 #define NUM_ENDPOINTS         3
 #define NUM_INTERFACE         1

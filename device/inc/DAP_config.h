@@ -43,10 +43,6 @@ This information includes:
  - Optional information about a connected Target Device (for Evaluation Boards).
 */
 
-#ifdef _RTE_
-#include "RTE_Components.h"
-#include CMSIS_device_header
-#else
 #include "cmsis_dap/usb_desc_cmsis_dap.h"
 
 #include <cmsis_compiler.h>
@@ -54,8 +50,6 @@ This information includes:
 #include <debug/printf.h>
 #include <imxrt.h>
 #include <string.h>
-// #include <core_cm7.h>
-#endif
 
 /// Processor Clock of the Cortex-M MCU used in the Debug Unit.
 /// This value is used to calculate the SWD/JTAG clock speed.
@@ -273,8 +267,10 @@ __STATIC_INLINE uint8_t DAP_GetTargetBoardNameString(char *str)
 */
 __STATIC_INLINE uint8_t DAP_GetProductFirmwareVersionString(char *str)
 {
-    (void)str;
-    return (0U);
+    char product_firmware_version[] = PRODUCT_FIRMWARE_VERSION;
+    memset(str, 0U, sizeof(product_firmware_version) + 1);
+    memcpy(str, product_firmware_version, sizeof(product_firmware_version));
+    return sizeof(product_firmware_version) + 1;
 }
 
 ///@}
@@ -316,7 +312,6 @@ of the same I/O port. The following SWDIO I/O Pin functions are provided:
 
 // Configure DAP I/O pins ------------------------------
 
-#define PIN_nRESET      3U
 #define PIN_SWDIO       5U
 #define PIN_SWCLK       7U
 #define PIN_LED_RUNNING 13U
@@ -340,10 +335,8 @@ __STATIC_INLINE void PORT_SWD_SETUP(void)
 {
     pinMode(PIN_SWCLK, OUTPUT);
     pinMode(PIN_SWDIO, OUTPUT);
-    pinMode(PIN_nRESET, OUTPUT);
     digitalWrite(PIN_SWCLK, HIGH);
     digitalWrite(PIN_SWDIO, HIGH);
-    digitalWrite(PIN_nRESET, HIGH);
 }
 
 /** Disable JTAG/SWD I/O Pins.
@@ -354,7 +347,6 @@ __STATIC_INLINE void PORT_OFF(void)
 {
     pinMode(PIN_SWCLK, INPUT);
     pinMode(PIN_SWDIO, INPUT_PULLUP);
-    pinMode(PIN_nRESET, INPUT_PULLUP);
 }
 
 // SWCLK/TCK I/O pin -------------------------------------
@@ -364,7 +356,7 @@ __STATIC_INLINE void PORT_OFF(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_SWCLK_TCK_IN(void)
 {
-    return 0;
+    return (0U);
 }
 
 /** SWCLK/TCK I/O pin: Set Output to High.
@@ -500,8 +492,7 @@ __STATIC_FORCEINLINE void PIN_nTRST_OUT(uint32_t bit)
 */
 __STATIC_FORCEINLINE uint32_t PIN_nRESET_IN(void)
 {
-    pinMode(PIN_nRESET, INPUT_PULLUP);
-    return digitalReadFast(PIN_nRESET);
+    return (0U);
 }
 
 /** nRESET I/O pin: Set Output.
@@ -511,8 +502,7 @@ __STATIC_FORCEINLINE uint32_t PIN_nRESET_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_nRESET_OUT(uint32_t bit)
 {
-    pinMode(PIN_nRESET, OUTPUT);
-    digitalWriteFast(PIN_nRESET, bit);
+    ;
 }
 
 ///@}
@@ -592,7 +582,6 @@ __STATIC_INLINE void DAP_SETUP(void)
 {
     pinMode(PIN_SWCLK, INPUT_PULLDOWN);
     pinMode(PIN_SWDIO, INPUT_PULLUP);
-    pinMode(PIN_nRESET, INPUT_PULLUP);
     pinMode(PIN_LED_RUNNING, OUTPUT);
     LED_RUNNING_OUT(0);
 }
